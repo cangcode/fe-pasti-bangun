@@ -8,7 +8,7 @@ export default function AlarmPage() {
 
   useEffect(() => {
     // Ganti dengan URL backend kamu
-    fetch('http://localhost:5000/api/kode')
+    fetch(process.env.NEXT_PUBLIC_API_URL+'/api/kode')
       .then(res => res.json())
       .then(data => setKode(data.kode))
       .catch(() => setStatus('Gagal ambil kode'));
@@ -19,7 +19,7 @@ export default function AlarmPage() {
     setStatus('Memeriksa kode...');
 
     try {
-      const res = await fetch('http://localhost:5000/api/cek-kode', {
+      const res = await fetch(process.env.NEXT_PUBLIC_API_URL+'/api/cek-kode', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ kode: inputKode }),
