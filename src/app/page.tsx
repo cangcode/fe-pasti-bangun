@@ -11,7 +11,7 @@ export default function AlarmPage() {
     fetch(process.env.NEXT_PUBLIC_API_URL+'/api/kode')
       .then(res => res.json())
       .then(data => setKode(data.kode))
-      .catch(() => setStatus('Gagal ambil kode'));
+      .catch(() => setStatus('Gagal ambil kode mas'));
   }, []);
 
   async function handleSubmit(e:FormEvent) {
