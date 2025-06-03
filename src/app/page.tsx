@@ -1,11 +1,13 @@
 "use client"
-import { useState, useEffect, FormEvent } from 'react';
+import { useState, useEffect, FormEvent, useRef } from 'react';
 
 export default function AlarmPage() {
   const [kode, setKode] = useState('');
   const [inputKode, setInputKode] = useState('');
   const [status, setStatus] = useState('');
   const [isActive, setIsActive] = useState(false);
+  const [isCorrect, setIsCorrect] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     // Ganti dengan URL backend kamu
@@ -37,8 +39,17 @@ export default function AlarmPage() {
 
       if (data.valid) {
         setStatus('Kode benar, alarm dimatikan!');
+        setIsCorrect(true)
+        const timer = setTimeout(() => {
+          setIsActive(false)
+          setIsCorrect(false)
+        }, 3000);
+        return () => clearTimeout(timer);
       } else {
         setStatus('Kode salah, coba lagi.');
+        if (inputRef.current) {
+          inputRef.current.value = '';
+        }
       }
     } catch {
       setStatus('Gagal menghubungi server');
@@ -54,7 +65,7 @@ export default function AlarmPage() {
           <>
             <p className="mb-4 text-lg">
           <span className="font-semibold">Kode unik hari ini:</span>{' '}
-          <span className={`${!isActive ? 'text-green-500' : 'text-blue-600'} font-mono`}>{kode || 'Loading...'}</span>
+          <span className={`${isCorrect ? 'text-green-500' : 'text-blue-600'} font-mono`}>{kode || 'Loading...'}</span>
         </p>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -65,18 +76,19 @@ export default function AlarmPage() {
             onChange={e => setInputKode(e.target.value.toUpperCase())}
             maxLength={6}
             required
-            className="border border-gray-300 rounded-md px-4 py-2 text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
+            ref={inputRef}
+            className={`border border-gray-300 rounded-md px-4 py-2 text-lg focus:outline-none focus:ring-2  ${isCorrect ? 'focus:ring-green-500' : 'focus:ring-blue-500'} font-mono`}
           />
           <button
             type="submit"
-            className={`${!isActive ? 'text-green-500' : 'bg-blue-600'} text-white rounded-md py-2 text-lg hover:bg-blue-700 transition`}
+            className={`${isCorrect ? 'bg-green-500' : 'bg-blue-600'} text-white rounded-md py-2 text-lg transition`}
           >
             Kirim Kode
           </button>
         </form>
 
         {status && (
-          <p className={`mt-4 text-center text-sm text-gray-700 ${!isActive ? 'text-green-500' : null}`}>
+          <p className={`mt-4 text-center text-sm text-gray-700 ${isCorrect ? 'text-green-500' : null}`}>
             {status}
           </p>
         )}
